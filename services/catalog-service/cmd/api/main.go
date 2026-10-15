@@ -2,6 +2,7 @@ package main
 
 import (
 	"catalog-service/internal/database"
+	"catalog-service/internal/event"
 	"context"
 	"log/slog"
 	"net/http"
@@ -16,12 +17,12 @@ func main() {
 	slog.SetDefault(logger)
 
 	dbCfg := database.Config{
-		Host:     "localhost",
-		Port:     "5433",
-		User:     "postgres",
-		Password: "123456",
-		DBName:   "events",
-		SSLMode:  "disable",
+		Host:     getEnv("DB_HOST", "localhost"),
+		Port:     getEnv("DB_PORT", "5432"),
+		User:     getEnv("DB_USER", "postgres"),
+		Password: getEnv("DB_PASSWORD", "123456"),
+		DBName:   getEnv("DB_NAME", "postgres"),
+		SSLMode:  getEnv("DB_SSLMODE", "disable"),
 	}
 
 	db, err := database.NewPostgresPool(dbCfg)
@@ -32,7 +33,13 @@ func main() {
 	defer db.Close()
 	slog.Info("connected to postgres")
 
+	eventRepo := event.NewRepository(db)
+	eventHandler := event.NewHandler(eventRepo)
+
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /events", eventHandler.GetAllHandler)
+	mux.HandleFunc("GET /events/{id}", eventHandler.GetEventHandler)
 
 	port := os.Getenv("PORT")
 	server := &http.Server{
@@ -51,7 +58,7 @@ func main() {
 		}
 	}()
 
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	slog.Info("shutting down server...")
@@ -59,8 +66,15 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err = server.Shutdown(ctx); err != nil {
-		slog.Error("failed to shutdown server", "error", err)
+		slog.Error("failed to shutdown server gracefully", "error", err)
 		os.Exit(1)
 	}
 	slog.Info("server shutdown successfully")
+}
+
+func getEnv(key, fallback string) string {
+	if val := os.Getenv(key); val != "" {
+		return val
+	}
+	return fallback
 }
