@@ -35,6 +35,7 @@ services:
       DB_USER: postgres
       DB_PASSWORD: "123456"
       DB_NAME: postgres
+      DB_SEARCH_PATH: catalog
       DB_SSLMODE: disable
 
 volumes:
