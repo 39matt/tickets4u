@@ -17,12 +17,13 @@ func main() {
 	slog.SetDefault(logger)
 
 	dbCfg := database.Config{
-		Host:     getEnv("DB_HOST", "localhost"),
-		Port:     getEnv("DB_PORT", "5432"),
-		User:     getEnv("DB_USER", "postgres"),
-		Password: getEnv("DB_PASSWORD", "123456"),
-		DBName:   getEnv("DB_NAME", "postgres"),
-		SSLMode:  getEnv("DB_SSLMODE", "disable"),
+		Host:       getEnv("DB_HOST", "localhost"),
+		Port:       getEnv("DB_PORT", "5432"),
+		User:       getEnv("DB_USER", "postgres"),
+		Password:   getEnv("DB_PASSWORD", "123456"),
+		DBName:     getEnv("DB_NAME", "postgres"),
+		SearchPath: getEnv("DB_SEARCH_PATH", "public"),
+		SSLMode:    getEnv("DB_SSLMODE", "disable"),
 	}
 
 	db, err := database.NewPostgresPool(dbCfg)

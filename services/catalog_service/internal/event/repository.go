@@ -37,7 +37,7 @@ func (r *Repository) GetEvents(ctx context.Context) ([]Event, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan event: %w", err)
 		}
-		events = append(events, Event{})
+		events = append(events, e)
 
 	}
 

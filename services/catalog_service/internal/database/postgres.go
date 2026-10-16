@@ -10,16 +10,17 @@ import (
 )
 
 type Config struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	DBName   string
-	SSLMode  string
+	Host       string
+	Port       string
+	User       string
+	Password   string
+	DBName     string
+	SearchPath string
+	SSLMode    string
 }
 
 func NewPostgresPool(config Config) (*sql.DB, error) {
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", config.User, config.Password, config.Host, config.Port, config.DBName, config.SSLMode)
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?search_path=%s&sslmode=%s", config.User, config.Password, config.Host, config.Port, config.DBName, config.SearchPath, config.SSLMode)
 	db, err := sql.Open("pgx", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to postgres: %w", err)
