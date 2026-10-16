@@ -18,6 +18,24 @@ services:
       timeout: 5s
       retries: 5
 
+  catalog_service:
+    container_name: catalog_service
+    build:
+      context: ./services/catalog-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgresql
+    environment:
+      PORT: "8080"
+      DB_HOST: postgresql
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: "123456"
+      DB_NAME: postgres
+      DB_SSLMODE: disable
+
 volumes:
   pgdata:
 
