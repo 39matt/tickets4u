@@ -11,7 +11,7 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build \
     -ldflags="-w -s" \
-    -o /app/bin/catalog-service \
+    -o /app/bin/catalog_service \
     ./cmd/api
 
 FROM scratch

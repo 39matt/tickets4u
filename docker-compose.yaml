@@ -21,12 +21,13 @@ services:
   catalog_service:
     container_name: catalog_service
     build:
-      context: ./services/catalog-service
+      context: ./services/catalog_service
       dockerfile: Dockerfile
     ports:
       - "8081:8080"
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
     environment:
       PORT: "8080"
       DB_HOST: postgresql
